@@ -3,7 +3,7 @@ using System.Text.Json;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using SuiviEntretien.Models;
 using SuiviEntretien.Services;
-using Microsoft.Maui.Controls.Shapes;
+using RoundRectangle = Microsoft.Maui.Controls.Shapes.RoundRectangle;
 
 namespace SuiviEntretien.Views;
 
