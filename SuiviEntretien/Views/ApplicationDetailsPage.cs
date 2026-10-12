@@ -1,4 +1,5 @@
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls.Shapes;
 using SuiviEntretien.Models;
 
 namespace SuiviEntretien.Views;
