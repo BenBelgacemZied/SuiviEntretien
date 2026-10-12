@@ -20,6 +20,15 @@ jobs:
       - name: Build APK
         working-directory: SuiviEntretien
         run: dotnet publish SuiviEntretien.csproj -f net10.0-android -c Release -p:AndroidPackageFormat=apk
+      - name: Verify Android launcher icon
+        shell: bash
+        run: |
+          APK="$(find SuiviEntretien/bin/Release/net10.0-android/publish -name '*.apk' -print -quit)"
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -n 1)"
+          test -n "$APK"
+          test -n "$AAPT"
+          "$AAPT" dump badging "$APK" | tee /tmp/suivientretien-badging.txt
+          grep -q "appicon" /tmp/suivientretien-badging.txt
       - uses: actions/upload-artifact@v4
         with:
           name: SuiviEntretien-Android-APK
