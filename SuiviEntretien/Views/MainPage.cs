@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;\nusing System.Text.Json;\nusing Microsoft.Maui.ApplicationModel.DataTransfer;
 using SuiviEntretien.Models;
 using SuiviEntretien.Services;
 using Microsoft.Maui.Controls.Shapes;
@@ -35,6 +35,10 @@ public sealed class MainPage : ContentPage
 
         var add = new Button { Text = "+  Ajouter une candidature", BackgroundColor = Color.FromArgb("#245FE5"), TextColor = Colors.White, CornerRadius = 13, HeightRequest = 52, FontAttributes = FontAttributes.Bold };
         add.Clicked += async (_, _) => await EditAsync(null);
+        var exportButton = new Button { Text = "Exporter la sauvegarde", FontSize = 12, BackgroundColor = Colors.White, TextColor = Color.FromArgb("#245FE5"), CornerRadius = 11 };
+        exportButton.Clicked += async (_, _) => await ExportBackupAsync();
+        var importButton = new Button { Text = "Restaurer une sauvegarde", FontSize = 12, BackgroundColor = Colors.White, TextColor = Color.FromArgb("#245FE5"), CornerRadius = 11 };
+        importButton.Clicked += async (_, _) => await ImportBackupAsync();
 
         Content = new ScrollView
         {
@@ -105,7 +109,57 @@ public sealed class MainPage : ContentPage
         _summary.Text = $"{_items.Count} candidature(s) · {_items.Count(x => x.Status is ApplicationStatus.Envoyee or ApplicationStatus.Relance)} en attente · {_items.Count(x => x.Status == ApplicationStatus.Entretien)} entretien(s) · {_items.Count(x => x.NeedsFollowUp)} à relancer";
     }
 
-    private async Task EditAsync(JobApplication? existing)
+
+    private async Task ExportBackupAsync()
+    {
+        try
+        {
+            var data = await _store.GetAllAsync();
+            var path = Path.Combine(FileSystem.CacheDirectory, $"suivientretien-{DateTime.Now:yyyyMMdd-HHmmss}.json");
+            await File.WriteAllTextAsync(path, JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true }));
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = "Sauvegarder mes candidatures",
+                File = new ShareFile(path)
+            });
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync("Export impossible", ex.Message, "OK");
+        }
+    }
+
+    private async Task ImportBackupAsync()
+    {
+        try
+        {
+            var file = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Choisir une sauvegarde SuiviEntretien" });
+            if (file is null) return;
+            await using var stream = await file.OpenReadAsync();
+            var imported = await JsonSerializer.DeserializeAsync<List<JobApplication>>(stream);
+            if (imported is null || imported.Any(x => string.IsNullOrWhiteSpace(x.Company) || string.IsNullOrWhiteSpace(x.Role)))
+            {
+                await DisplayAlertAsync("Fichier invalide", "Choisis un fichier de sauvegarde SuiviEntretien valide.", "OK");
+                return;
+            }
+
+            var confirm = await DisplayAlertAsync("Restaurer une sauvegarde",
+                $"Cette action remplacera les {_items.Count} candidature(s) actuelles par les {imported.Count} candidature(s) de la sauvegarde.",
+                "Restaurer", "Annuler");
+            if (!confirm) return;
+
+            await _store.ReplaceAllAsync(imported);
+            _items.Clear();
+            foreach (var item in imported.OrderByDescending(x => x.AppliedOn)) _items.Add(item);
+            Refresh();
+            await DisplayAlertAsync("Sauvegarde restaurée", $"{imported.Count} candidature(s) restaurée(s).", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync("Restauration impossible", ex.Message, "OK");
+        }
+    }
+\n    private async Task EditAsync(JobApplication? existing)
     {
         var item = existing is null ? new JobApplication() : new JobApplication
         {
