@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using SuiviEntretien.Models;
 using SuiviEntretien.Services;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace SuiviEntretien.Views;
 
