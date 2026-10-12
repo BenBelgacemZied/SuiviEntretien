@@ -1,4 +1,6 @@
-using System.Collections.ObjectModel;\nusing System.Text.Json;\nusing Microsoft.Maui.ApplicationModel.DataTransfer;
+using System.Collections.ObjectModel;
+using System.Text.Json;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
 using SuiviEntretien.Models;
 using SuiviEntretien.Services;
 using Microsoft.Maui.Controls.Shapes;
@@ -56,6 +58,7 @@ public sealed class MainPage : ContentPage
                     _search,
                     _filter,
                     add,
+                    new HorizontalStackLayout { Spacing = 8, Children = { exportButton, importButton } },
                     _list
                 }
             }
@@ -159,7 +162,8 @@ public sealed class MainPage : ContentPage
             await DisplayAlertAsync("Restauration impossible", ex.Message, "OK");
         }
     }
-\n    private async Task EditAsync(JobApplication? existing)
+
+    private async Task EditAsync(JobApplication? existing)
     {
         var item = existing is null ? new JobApplication() : new JobApplication
         {
