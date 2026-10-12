@@ -35,7 +35,9 @@ public sealed class ApplicationStore
         await WriteAsync(items);
     }
 
-    public Task ReplaceAllAsync(List<JobApplication> items) => WriteAsync(items);\n\n    private async Task WriteAsync(List<JobApplication> items)
+    public Task ReplaceAllAsync(List<JobApplication> items) => WriteAsync(items);
+
+    private async Task WriteAsync(List<JobApplication> items)
     {
         await _gate.WaitAsync();
         try
