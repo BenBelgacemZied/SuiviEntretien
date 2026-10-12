@@ -25,7 +25,13 @@ public sealed class MainPage : ContentPage
         _search.TextChanged += (_, _) => Refresh();
         _filter = new Picker { Title = "Tous les statuts", ItemsSource = new[] { "Tous", "Envoyée", "Relance", "Entretien", "Offre", "Refus", "Clôturée" }, SelectedIndex = 0, BackgroundColor = Colors.White };
         _filter.SelectedIndexChanged += (_, _) => Refresh();
-        _list = new CollectionView { ItemsSource = _items, SelectionMode = SelectionMode.None, ItemTemplate = new DataTemplate(CreateCard) };
+        _list = new CollectionView { ItemsSource = _items, SelectionMode = SelectionMode.Single, ItemTemplate = new DataTemplate(CreateCard) };
+        _list.SelectionChanged += async (_, e) =>
+        {
+            if (e.CurrentSelection.FirstOrDefault() is JobApplication selected)
+                await Navigation.PushAsync(new ApplicationDetailsPage(selected));
+            _list.SelectedItem = null;
+        };
 
         var add = new Button { Text = "+  Ajouter une candidature", BackgroundColor = Color.FromArgb("#245FE5"), TextColor = Colors.White, CornerRadius = 13, HeightRequest = 52, FontAttributes = FontAttributes.Bold };
         add.Clicked += async (_, _) => await EditAsync(null);
