@@ -1,5 +1,5 @@
 using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls.Shapes;
+using RoundRectangle = Microsoft.Maui.Controls.Shapes.RoundRectangle;
 using SuiviEntretien.Models;
 
 namespace SuiviEntretien.Views;
