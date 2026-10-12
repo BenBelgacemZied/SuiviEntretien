@@ -9,12 +9,12 @@
     <Nullable>enable</Nullable>
     <ApplicationTitle>Suivi Entretien</ApplicationTitle>
     <ApplicationId>com.benbelgacemzied.suivientretien</ApplicationId>
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
+    <ApplicationVersion>2</ApplicationVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <MauiIcon Include="Resources/AppIcon/appicon.svg" />
+    <MauiIcon Include="Resources/AppIcon/appicon.svg" ForegroundFile="Resources/AppIcon/appiconfg.svg" Color="#245FE5" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
