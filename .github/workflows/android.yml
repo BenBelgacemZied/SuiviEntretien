@@ -1,0 +1,27 @@
+name: Android APK
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+      - name: Restore
+        working-directory: SuiviEntretien
+        run: dotnet restore SuiviEntretien.csproj
+      - name: Build APK
+        working-directory: SuiviEntretien
+        run: dotnet publish SuiviEntretien.csproj -f net10.0-android -c Release -p:AndroidPackageFormat=apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SuiviEntretien-Android-APK
+          path: SuiviEntretien/bin/Release/net10.0-android/publish/*.apk
+          if-no-files-found: error
